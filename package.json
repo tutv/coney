@@ -17,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/tutv/coney/issues"
   },
-  "homepage": "https://github.com/tutv/coney#readme"
+  "homepage": "https://github.com/tutv/coney#readme",
+  "dependencies": {
+    "amqplib": "^0.8.0"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.8.1"
+  }
 }
