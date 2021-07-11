@@ -2,7 +2,8 @@
   "name": "coney",
   "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "tsc"
@@ -22,6 +23,7 @@
     "amqplib": "^0.8.0"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.8.1"
+    "@types/amqplib": "^0.8.1",
+    "dotenv": "^10.0.0"
   }
 }
