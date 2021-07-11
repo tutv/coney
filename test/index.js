@@ -9,13 +9,14 @@ const _run = async () => {
     const coney = new Coney(rabbit)
 
     await coney.handleJob('test', {noAck: true}, async (msg) => {
-        console.log("MSG", msg)
+        console.log("MSG", msg.body)
+        throw new Error('Hello error')
     })
 
-    setInterval(async () => {
+    // setInterval(async () => {
         await coney.addJob('test', {hello: 'world'})
         console.log("ADDED")
-    }, 1000)
+    // }, 1000)
 
 
 }

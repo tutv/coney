@@ -1,6 +1,8 @@
 import {WorkerOptions} from "../interfaces/SubscribeOptions"
 import {Channel, ConsumeMessage} from "amqplib"
 import {parseBufferToJSON} from "../helpers/parseBufferToJSON"
+import {ConeyMessage} from "./ConeyMessage"
+import {ConeyHandler} from "../types/ConeyHandler"
 
 const DEFAULT_OPTIONS: WorkerOptions = {
     noAck: true
@@ -17,14 +19,12 @@ export class JobHandler {
     }
 
 
-    private async _handle(msg: ConsumeMessage, handler: Function): Promise<void> {
-        const {content} = msg
-        const body = parseBufferToJSON(content)
-
+    private async _handle(msg: ConsumeMessage, handler: ConeyHandler): Promise<void> {
+        const message = new ConeyMessage(this.channel, msg)
         const {noAck} = this.options
 
         try {
-            await handler(body)
+            await handler(message)
 
             if (noAck) {
                 await this.channel.ack(msg)
@@ -34,7 +34,7 @@ export class JobHandler {
         }
     }
 
-    public async consume(queueName: string, handler: Function): Promise<void> {
+    public async consume(queueName: string, handler: ConeyHandler): Promise<void> {
         await this.channel.consume(queueName, (msg) => {
             if (!msg) return
 

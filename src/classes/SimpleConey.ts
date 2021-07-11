@@ -6,6 +6,7 @@ import {MessageData} from "./MessageData"
 import {MessageOptions} from "./MessageOptions"
 import {WorkerOptions} from "../interfaces/SubscribeOptions"
 import {JobHandler} from "./JobHandler"
+import {ConeyHandler} from "../types/ConeyHandler"
 
 
 export class SimpleConey {
@@ -23,7 +24,7 @@ export class SimpleConey {
         return `${this.prefix}:${type}.${name}`
     }
 
-    public async addJob(subject: string, payload: any, opts?: PublishOptions) {
+    public async addJob(subject: string, body: any, opts?: PublishOptions) {
         const vQueueName = this._injectPrefix(subject, PREFIX_QUEUE_TYPES.queue)
         const channel = await this.channelBuilder.getChannel()
 
@@ -31,13 +32,13 @@ export class SimpleConey {
             durable: true,
         })
 
-        const buffer = MessageData.from(payload).toBuffer()
+        const buffer = MessageData.from(body).toBuffer()
         const options = new MessageOptions(opts)
 
         return channel.sendToQueue(vQueueName, buffer, options.toObject())
     }
 
-    public async handleJob(subject: string, opts: WorkerOptions = {}, handler: Function) {
+    public async handleJob(subject: string, opts: WorkerOptions = {}, handler: ConeyHandler) {
         const vQueueName = this._injectPrefix(subject, PREFIX_QUEUE_TYPES.queue)
         const channel = await this.channelBuilder.getChannel()
 
