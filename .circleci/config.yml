@@ -6,14 +6,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install typescript
+          command: npm install -g typescript
+      - run:
           name: Install npm
           command: npm install
       - run:
           name: Auth With NPM
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-      - run:
-          name: Install typescript
-          command: npm install -g typescript
       - run:
           name: Publish to NPM
           command: npm publish
