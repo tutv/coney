@@ -17,3 +17,6 @@ jobs:
       - run:
           name: Publish to NPM
           command: npm publish
+    branches:
+      only:
+        - master
