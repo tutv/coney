@@ -35,6 +35,10 @@ export class JobHandler {
     }
 
     public async consume(queueName: string, handler: ConeyHandler): Promise<void> {
+        await this.channel.assertQueue(queueName, {
+            durable: true,
+        })
+
         await this.channel.consume(queueName, (msg) => {
             if (!msg) return
 

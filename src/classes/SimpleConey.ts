@@ -2,11 +2,11 @@ import {ConnectionBuilder} from "./ConnectionBuilder"
 import {ChannelBuilder} from "./ChannelBuilder"
 import {PREFIX_QUEUE_TYPES} from "../types/PREFIX_QUEUE_TYPES"
 import {PublishOptions} from "../interfaces/PublishOptions"
-import {MessageData} from "./MessageData"
-import {MessageOptions} from "./MessageOptions"
 import {WorkerOptions} from "../interfaces/SubscribeOptions"
 import {JobHandler} from "./JobHandler"
 import {ConeyHandler} from "../types/ConeyHandler"
+import {DEFAULT_PREFIX} from "../constants/common"
+import {JobMaker} from "./JobMaker"
 
 
 export class SimpleConey {
@@ -16,35 +16,25 @@ export class SimpleConey {
 
     constructor(connection: ConnectionBuilder, prefix?: string) {
         this.connection = connection
+        this.prefix = prefix || DEFAULT_PREFIX
         this.channelBuilder = ChannelBuilder.getChannelBuilder(this.connection)
-        this.prefix = prefix || 'coney'
     }
 
     private _injectPrefix(name: string, type: string): string {
         return `${this.prefix}:${type}.${name}`
     }
 
-    public async addJob(subject: string, body: any, opts?: PublishOptions) {
-        const vQueueName = this._injectPrefix(subject, PREFIX_QUEUE_TYPES.queue)
+    public async sendToQueue(queueName: string, body: any, opts?: PublishOptions) {
+        const vQueueName = this._injectPrefix(queueName, PREFIX_QUEUE_TYPES.queue)
         const channel = await this.channelBuilder.getChannel()
 
-        await channel.assertQueue(vQueueName, {
-            durable: true,
-        })
-
-        const buffer = MessageData.from(body).toBuffer()
-        const options = new MessageOptions(opts)
-
-        return channel.sendToQueue(vQueueName, buffer, options.toObject())
+        const jobMaker = new JobMaker(channel, vQueueName, opts)
+        return jobMaker.sendToQueue(body)
     }
 
-    public async handleJob(subject: string, opts: WorkerOptions = {}, handler: ConeyHandler) {
-        const vQueueName = this._injectPrefix(subject, PREFIX_QUEUE_TYPES.queue)
+    public async consume(queueName: string, opts: WorkerOptions = {}, handler: ConeyHandler) {
+        const vQueueName = this._injectPrefix(queueName, PREFIX_QUEUE_TYPES.queue)
         const channel = await this.channelBuilder.getChannel()
-
-        await channel.assertQueue(vQueueName, {
-            durable: true,
-        })
 
         const jobHandler = new JobHandler(channel, opts)
         await jobHandler.consume(vQueueName, handler)
