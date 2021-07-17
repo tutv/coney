@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Install npm
-          command: yarn install
+          command: npm install
       - run:
           name: Auth With NPM
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
