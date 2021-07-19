@@ -6,9 +6,3 @@ export interface PublishOptions {
 export interface AddJobOptions extends PublishOptions {
 
 }
-
-export interface SeederOptions extends PublishOptions {
-    durationMilliseconds: number,
-    redeclare?: boolean,
-}
-

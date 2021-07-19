@@ -8,7 +8,9 @@ const {Coney} = require('../dist/index')
 const _run = async () => {
     const coney = new Coney(rabbit)
 
-    await coney.consume('test', {noAck: true}, async (msg) => {
+    await coney.consume('test', {
+        maxRetries: 3
+    }, async (msg) => {
         console.log("MSG", msg.body)
         console.log("RETRIES", msg.retries)
         throw new Error('Hello error')

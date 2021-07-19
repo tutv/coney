@@ -4,10 +4,13 @@ import {ConeyMessage} from "./ConeyMessage"
 import {ConeyHandler} from "../types/ConeyHandler"
 import {REQUEUE_POSTFIX, RETRY_QUEUE_POSTFIX} from "../constants/queue"
 import logger from "../helpers/logger"
+import {X_RETRIES} from "../constants/header"
+import {DelayStrategy} from "./DelayStrategy"
 
 
 const DEFAULT_OPTIONS: WorkerOptions = {
-    noAck: true
+    noAck: true,
+    maxRetries: 0
 }
 
 export class JobHandler {
@@ -26,9 +29,8 @@ export class JobHandler {
     private async _handle(msg: ConsumeMessage, handler: ConeyHandler): Promise<void> {
         const message = new ConeyMessage(this.channel, msg)
         const {noAck} = this.options
-
         const {headers} = msg.properties
-        const {'x-retries': retries} = headers
+        const {[X_RETRIES]: retries} = headers
         const vRetries = retries > 0 ? parseInt(retries, 10) : 0
         logger("RETRIES:", vRetries)
 
@@ -39,14 +41,24 @@ export class JobHandler {
                 await this.channel.ack(msg)
             }
         } catch (error) {
-            // console.error("HANDLE_JOB_FAILED:", error)
-            const delayTime = (vRetries + 1) ** 2 * 1000
+            const countRetries = vRetries + 1
+            const {maxRetries, calculateDelay} = this.options
+
+            if (countRetries > maxRetries) {
+                console.error(`Max retries reached. Retries: ${vRetries}/${maxRetries}`)
+                await this.channel.ack(msg)
+
+                return
+            }
+
+            const delayStrategy = new DelayStrategy(calculateDelay)
+            const delayTime = delayStrategy.calculate(countRetries)
             logger("DELAY_TIME:", delayTime)
             const retryExchange = `${this.queueName}.${RETRY_QUEUE_POSTFIX}`
             this.channel.publish(retryExchange, this.queueName, msg.content, {
                 expiration: `${delayTime}`,
                 headers: {
-                    'x-retries': vRetries + 1
+                    [X_RETRIES]: countRetries
                 }
             })
 

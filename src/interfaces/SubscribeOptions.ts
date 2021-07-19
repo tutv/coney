@@ -1,8 +1,9 @@
+import {calculateDelay} from "../types/calculateDelay"
+
+
 export interface BaseOptions {
-    oneShot?: boolean,
     noAck?: boolean,
-    initialDelayTime?: number, // 5000
-    maxRetries?: number, // 5
+    maxRetries?: number,
 }
 
 export interface SubscribeOptions extends BaseOptions {
@@ -10,4 +11,7 @@ export interface SubscribeOptions extends BaseOptions {
 }
 
 export interface WorkerOptions extends BaseOptions {
+    maxRetries: number,
+    calculateDelay?: calculateDelay
 }
+

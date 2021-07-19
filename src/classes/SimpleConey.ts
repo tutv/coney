@@ -32,7 +32,7 @@ export class SimpleConey {
         return jobMaker.sendToQueue(body)
     }
 
-    public async consume(queueName: string, opts: WorkerOptions = {}, handler: ConeyHandler) {
+    public async consume(queueName: string, opts: WorkerOptions, handler: ConeyHandler) {
         const vQueueName = this._injectPrefix(queueName, PREFIX_QUEUE_TYPES.queue)
         const channel = await this.channelBuilder.getChannel()
 
