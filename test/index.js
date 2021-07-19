@@ -10,12 +10,13 @@ const _run = async () => {
 
     await coney.consume('test', {noAck: true}, async (msg) => {
         console.log("MSG", msg.body)
-        // throw new Error('Hello error')
+        console.log("RETRIES", msg.retries)
+        throw new Error('Hello error')
     })
 
     // setInterval(async () => {
-        await coney.sendToQueue('test', {hello: 'world'})
-        console.log("ADDED")
+    await coney.sendToQueue('test', {hello: 'world', time: Date.now()})
+    console.log("ADDED")
     // }, 1000)
 
 
