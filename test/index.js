@@ -8,14 +8,17 @@ const {Coney} = require('../dist/index')
 const _run = async () => {
     const coney = new Coney(rabbit)
 
-    await coney.consume('test', {noAck: true}, async (msg) => {
+    await coney.consume('test', {
+        maxRetries: 3
+    }, async (msg) => {
         console.log("MSG", msg.body)
-        // throw new Error('Hello error')
+        console.log("RETRIES", msg.retries)
+        throw new Error('Hello error')
     })
 
     // setInterval(async () => {
-        await coney.sendToQueue('test', {hello: 'world'})
-        console.log("ADDED")
+    await coney.sendToQueue('test', {hello: 'world', time: Date.now()})
+    console.log("ADDED")
     // }, 1000)
 
 

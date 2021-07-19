@@ -3,8 +3,6 @@ export interface PublishOptions {
     headers?: Record<any, any>
 }
 
-export interface SeederOptions extends PublishOptions {
-    durationMilliseconds: number,
-    redeclare?: boolean,
-}
+export interface AddJobOptions extends PublishOptions {
 
+}
