@@ -2,3 +2,5 @@ test/
 .idea/
 src/
 .circleci/
+nodemon.json
+tsconfig.json
