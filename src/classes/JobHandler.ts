@@ -4,7 +4,7 @@ import {ConeyMessage} from "./ConeyMessage"
 import {ConeyHandler} from "../types/ConeyHandler"
 import {REQUEUE_POSTFIX, RETRY_QUEUE_POSTFIX} from "../constants/queue"
 import logger from "../helpers/logger"
-import {X_RETRIES} from "../constants/header"
+import {X_REASON, X_RETRIES} from "../constants/header"
 import {DelayStrategy} from "./DelayStrategy"
 
 
@@ -45,6 +45,7 @@ export class JobHandler {
             const {maxRetries, calculateDelay} = this.options
 
             if (countRetries > maxRetries) {
+                console.error('[HANDLE_ERROR]', error)
                 console.error(`Max retries reached. Retries: ${vRetries}/${maxRetries}`)
                 await this.channel.ack(msg)
 
@@ -58,7 +59,8 @@ export class JobHandler {
             this.channel.publish(retryExchange, this.queueName, msg.content, {
                 expiration: `${delayTime}`,
                 headers: {
-                    [X_RETRIES]: countRetries
+                    [X_RETRIES]: countRetries,
+                    [X_REASON]: error.message
                 }
             })
 
