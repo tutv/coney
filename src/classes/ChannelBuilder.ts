@@ -3,8 +3,8 @@ import {Channel} from 'amqplib'
 import {ChannelBuilderOption} from "../interfaces/ChannelBuilderOption"
 
 
-const DEFAULT_CHANNEL_PREFETCH = 1
-const DEFAULT_CONSUMER_PREFETCH = 1
+const DEFAULT_CHANNEL_PREFETCH = parseInt((process.env.CHANNEL_PREFETCH || 1).toString(), 10)
+const DEFAULT_CONSUMER_PREFETCH = parseInt((process.env.CONSUMER_PREFETCH || 1).toString(), 10)
 
 
 export class ChannelBuilder {
@@ -38,7 +38,7 @@ export class ChannelBuilder {
         }, opts)
     }
 
-    private _broadcast(error: Error | null, channel?: Channel) {
+    private _broadcast(error: unknown, channel?: Channel) {
         this.subscribers.forEach(callback => {
             callback(error, channel)
         })
@@ -77,7 +77,7 @@ export class ChannelBuilder {
             this.channel = await connection.createChannel()
 
             await this.basicQos(this.opts.channelPrefetch, true)
-            await this.basicQos(this.opts.consumerPrefetch, true)
+            await this.basicQos(this.opts.consumerPrefetch, false)
 
             this._broadcast(null, this.channel)
             this.isCreating = false
