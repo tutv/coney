@@ -52,6 +52,8 @@ export class JobHandler {
                 return
             }
 
+            const {message} = (error as Error)
+
             const delayStrategy = new DelayStrategy(calculateDelay)
             const delayTime = delayStrategy.calculate(countRetries)
             logger("DELAY_TIME:", delayTime)
@@ -60,7 +62,7 @@ export class JobHandler {
                 expiration: `${delayTime}`,
                 headers: {
                     [X_RETRIES]: countRetries,
-                    [X_REASON]: error.message
+                    [X_REASON]: message
                 }
             })
 
