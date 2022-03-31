@@ -9,6 +9,12 @@ import {DEFAULT_PREFIX} from "../constants/common"
 import {JobMaker} from "./JobMaker"
 
 
+interface AssertQueue {
+    queue: string
+    messageCount: number
+    consumerCount: number
+}
+
 export class SimpleConey {
     private readonly connection: ConnectionBuilder
     private readonly channelBuilder: ChannelBuilder
@@ -38,6 +44,13 @@ export class SimpleConey {
 
         const jobHandler = new JobHandler(channel, vQueueName, opts)
         await jobHandler.consume(handler)
+    }
+
+    public async getQueue(queueName: string): Promise<AssertQueue> {
+        const vQueueName = this._injectPrefix(queueName, PREFIX_QUEUE_TYPES.queue)
+        const channel = await this.channelBuilder.getChannel()
+
+        return channel.checkQueue(vQueueName)
     }
 }
 
