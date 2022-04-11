@@ -16,7 +16,8 @@ export class ConeyMessage {
     }
 
     private _parseRetries() {
-        const {'x-retries': retries} = this._msg.properties.headers
+        const {headers} = Object.assign({}, this._msg.properties)
+        const {'x-retries': retries} = Object.assign({}, headers)
         this.retries = retries > 0 ? parseInt(retries, 10) : 0
     }
 }
