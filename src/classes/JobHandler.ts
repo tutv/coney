@@ -30,7 +30,7 @@ export class JobHandler {
         const message = new ConeyMessage(this.channel, msg)
         const {noAck} = this.options
         const {headers} = msg.properties
-        const {[X_RETRIES]: retries} = headers
+        const {[X_RETRIES]: retries} = Object.assign({}, headers)
         const vRetries = retries > 0 ? parseInt(retries, 10) : 0
         logger("RETRIES:", vRetries)
 
