@@ -93,7 +93,7 @@ describe('Coney integration', () => {
         t.after(() => cleanupQueue(DEFAULT_PREFIX, queueName))
 
         const coney = new Coney(getRabbit(), DEFAULT_PREFIX)
-        await coney.sendToQueue(queueName, {payload: 'expires'}, {ttl: 200})
+        await coney.sendToQueue(queueName, {payload: 'expires'}, {ttl: 5000})
 
         const before = await coney.getQueue(queueName)
         assert.strictEqual(before.messageCount, 1)
@@ -101,7 +101,7 @@ describe('Coney integration', () => {
         await waitFor(async () => {
             const s = await coney.getQueue(queueName)
             return s.messageCount === 0
-        }, {timeout: 3000})
+        }, {timeout: 10000})
     })
 
     it('consume receives the published payload and reports retries=0', async (t) => {
