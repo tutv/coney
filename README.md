@@ -4,11 +4,19 @@ A simple queue backed by RabbitMQ.
 
 ## Installation
 
-```
-yarn add coney
+`coney` requires [`amqplib`](https://www.npmjs.com/package/amqplib) as a peer dependency. Install both:
 
-#or npm i coney 
 ```
+yarn add coney amqplib
+
+# or npm i coney amqplib
+```
+
+### Peer dependency
+
+| Package   | Required version |
+|-----------|------------------|
+| `amqplib` | `^1.0.0`         |
 
 ## Features
 

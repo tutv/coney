@@ -21,7 +21,7 @@ const _run = async () => {
     // console.log("ADDED")
     // }, 1000)
 
-    const abc = await coney.getQueue('asubmit-cross')
+    const abc = await coney.sendToQueue('test-queue', {}, {ttl: 60_000})
     console.log("ABC", abc)
 
 

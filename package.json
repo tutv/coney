@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node test/index.js",
     "prepublish": "tsc"
   },
   "repository": {
@@ -19,11 +21,17 @@
     "url": "https://github.com/tutv/coney/issues"
   },
   "homepage": "https://github.com/tutv/coney#readme",
-  "dependencies": {
-    "amqplib": "^0.8.0"
+  "peerDependencies": {
+    "amqplib": "^1.0.0"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.8.1",
-    "dotenv": "^10.0.0"
+    "@types/amqplib": "^0.10.8",
+    "@types/node": "24",
+    "amqplib": "^1.0.6",
+    "dotenv": "^10.0.0",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "debug": "^4.4.3"
   }
 }

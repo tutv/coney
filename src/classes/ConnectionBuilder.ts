@@ -1,14 +1,14 @@
-import {Connection} from 'amqplib'
+import {ChannelModel} from 'amqplib'
 import logger from '../helpers/logger'
 
 
 export class ConnectionBuilder {
-    private readonly _connect: Promise<Connection>
-    private connection!: Connection
+    private readonly _connect: Promise<ChannelModel>
+    private connection!: ChannelModel
     private connecting: boolean = false
     private subscribers: Array<Function> = []
 
-    constructor(connection: Promise<Connection>) {
+    constructor(connection: Promise<ChannelModel>) {
         this._connect = connection
 
         this._openRabbitMQ().then(() => {
@@ -18,7 +18,7 @@ export class ConnectionBuilder {
         })
     }
 
-    private async _openRabbitMQ(): Promise<Connection> {
+    private async _openRabbitMQ(): Promise<ChannelModel> {
         return this._connect
             .then(connection => {
                 this.connection = connection
@@ -35,19 +35,19 @@ export class ConnectionBuilder {
             })
     }
 
-    private _broadcast(error: Error | null, connection?: Connection) {
+    private _broadcast(error: Error | null, connection?: ChannelModel) {
         this.subscribers.forEach(callback => {
             callback(error, connection)
         })
         this.subscribers = []
     }
 
-    public async open(): Promise<Connection> {
+    public async open(): Promise<ChannelModel> {
         if (this.connection) return this.connection
 
         if (this.connecting) {
             return new Promise((resolve, reject) => {
-                this.subscribers.push((error: Error, connection: Connection) => {
+                this.subscribers.push((error: Error, connection: ChannelModel) => {
                     if (error) return reject(error)
 
                     return resolve(connection)
@@ -60,7 +60,7 @@ export class ConnectionBuilder {
         return this._openRabbitMQ()
     }
 
-    public getConnection(): Connection {
+    public getConnection(): ChannelModel {
         return this.connection
     }
 }
